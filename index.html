@@ -94,15 +94,14 @@
                 <p class="eyebrow">선택한 룰렛</p>
                 <input class="roulette-title-input" id="rouletteTitleInput" aria-label="룰렛 제목" />
               </div>
-              <button class="primary-button" id="spinButton" type="button">돌리기</button>
             </div>
 
             <div class="wheel-stage">
               <div class="pointer" aria-hidden="true"></div>
               <canvas id="wheelCanvas" width="560" height="560" aria-label="룰렛 판"></canvas>
-              <div class="wheel-center">
+              <button class="wheel-center" id="spinButton" type="button" aria-label="룰렛 돌리기">
                 <span>SPIN</span>
-              </div>
+              </button>
             </div>
 
             <div class="result-box" id="resultBox" role="status" aria-live="polite">항목을 넣고 룰렛을 돌려보세요.</div>

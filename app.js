@@ -2,7 +2,7 @@ const STORAGE_KEY = "roulette-studio-personal-v2";
 const LEGACY_STORAGE_KEY = "roulette-studio-projects-v1";
 const SHARED_INDEX_KEY = "roulette-studio-shared-index-v1";
 const PENDING_SHARE_KEY = "roulette-studio-pending-share-v1";
-const palette = ["#2d6cdf", "#17a7a2", "#f4a62a", "#dc4768", "#4cba74", "#7a5ce1", "#ef6f3e", "#2f9bde"];
+const palette = ["#3a7896", "#d99a37", "#c85f36", "#8f8278", "#d65041", "#3d5549", "#3d4b78", "#a4aa7f"];
 
 const projectList = document.querySelector("#projectList");
 const sharedProjectList = document.querySelector("#sharedProjectList");
