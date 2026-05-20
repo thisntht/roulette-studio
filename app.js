@@ -173,6 +173,7 @@ function setActiveProject(projectId) {
   saveState();
   subscribeToActiveWorkspace();
   render();
+  setMobileSidebarOpen(false);
 }
 
 function setActiveRoulette(rouletteId) {
@@ -193,7 +194,7 @@ function render() {
   accountMenuButton.textContent = currentUser?.email?.slice(0, 1).toUpperCase() || "?";
   accountSummaryText.textContent = currentUser?.email || "로그인 필요";
   signOutButton.disabled = !currentUser;
-  shareProjectButton.disabled = !currentUser || activeWorkspace.type === "shared";
+  shareProjectButton.disabled = !currentUser;
   renderProjects();
   renderSharedProjects();
   renderTabs(project);
@@ -853,6 +854,7 @@ async function openSharedWorkspace(id) {
   activeRouletteId = getActiveProject().activeRouletteId;
   currentRotation = 0;
   render();
+  setMobileSidebarOpen(false);
   await subscribeToActiveWorkspace();
 }
 
