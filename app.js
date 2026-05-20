@@ -414,8 +414,9 @@ function spinRoulette() {
 
 function getPointedItem(items, rotationDegrees) {
   const sliceDegrees = 360 / items.length;
-  const pointerDegrees = 0;
-  const wheelAngleAtPointer = ((pointerDegrees - rotationDegrees) % 360 + 360) % 360;
+  const pointerDegrees = -90;
+  const wheelStartDegrees = -90;
+  const wheelAngleAtPointer = ((pointerDegrees - rotationDegrees - wheelStartDegrees) % 360 + 360) % 360;
   const index = Math.floor(wheelAngleAtPointer / sliceDegrees) % items.length;
   return items[index];
 }
