@@ -59,16 +59,16 @@ function uid(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function createRoulette(title = "새 룰렛") {
+function createRoulette(title = "새 룰렛", items = []) {
   return {
     id: uid("roulette"),
     title,
-    items: ["커피", "산책", "독서", "청소"],
+    items,
   };
 }
 
 function createProject(name = "새 프로젝트") {
-  const roulette = createRoulette("오늘의 선택");
+  const roulette = createRoulette("오늘의 선택", ["커피", "산책", "독서", "청소"]);
   return {
     id: uid("project"),
     name,
@@ -355,7 +355,7 @@ function addProject() {
 
 function addRoulette() {
   const project = getActiveProject();
-  const roulette = createRoulette(`룰렛 ${project.roulettes.length + 1}`);
+  const roulette = createRoulette(`룰렛 ${project.roulettes.length + 1}`, []);
   project.roulettes.push(roulette);
   activeRouletteId = roulette.id;
   saveState();
