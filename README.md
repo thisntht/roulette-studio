@@ -14,8 +14,21 @@
 1. Firebase Authentication에서 Google 로그인을 켭니다.
 2. Firestore Database를 생성합니다.
 3. Firestore Rules에 `firestore.rules` 내용을 적용합니다.
-4. 앱 화면의 `Firebase 설정 JSON` 칸에 Firebase 웹 앱 설정 객체를 붙여넣습니다.
-5. `사용`을 체크하고 `동기화 설정 저장` 후 Google 로그인합니다.
+4. `firebase-config.js`의 `null`을 Firebase 웹 앱 설정 객체로 바꿉니다.
+5. 앱 화면에서 `사용`을 체크하고 `동기화 설정 저장` 후 Google 로그인합니다.
+
+예:
+
+```js
+window.ROULETTE_FIREBASE_CONFIG = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "..."
+};
+```
 
 ## 배포
 

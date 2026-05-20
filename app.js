@@ -20,6 +20,7 @@ const importInput = document.querySelector("#importInput");
 const syncToggle = document.querySelector("#syncToggle");
 const syncIdInput = document.querySelector("#syncIdInput");
 const firebaseConfigInput = document.querySelector("#firebaseConfigInput");
+const firebaseConfigField = document.querySelector(".config-field");
 const saveSyncButton = document.querySelector("#saveSyncButton");
 const syncNowButton = document.querySelector("#syncNowButton");
 const syncStatus = document.querySelector("#syncStatus");
@@ -43,6 +44,10 @@ let unsubscribeCloud = null;
 let syncSaveTimer = null;
 let isApplyingRemoteState = false;
 let lastCloudUpdatedAt = 0;
+
+function getBundledFirebaseConfig() {
+  return window.ROULETTE_FIREBASE_CONFIG || null;
+}
 
 function uid(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -152,6 +157,11 @@ function render() {
   syncToggle.checked = syncSettings.enabled;
   syncIdInput.value = syncSettings.syncId;
   firebaseConfigInput.value = syncSettings.firebaseConfigText;
+  firebaseConfigInput.disabled = Boolean(getBundledFirebaseConfig());
+  firebaseConfigInput.placeholder = getBundledFirebaseConfig()
+    ? "앱에 Firebase 설정이 포함되어 있습니다."
+    : '{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}';
+  firebaseConfigField.hidden = Boolean(getBundledFirebaseConfig());
   userEmail.textContent = currentUser?.email || "로그인하지 않음";
   signOutButton.disabled = !currentUser;
   syncNowButton.disabled = !syncSettings.enabled || !currentUser;
@@ -392,7 +402,7 @@ async function loadFirebaseApi() {
 }
 
 function parseFirebaseConfig() {
-  const config = JSON.parse(syncSettings.firebaseConfigText);
+  const config = getBundledFirebaseConfig() || JSON.parse(syncSettings.firebaseConfigText);
   if (!config.apiKey || !config.projectId || !config.appId) {
     throw new Error("Firebase 설정 JSON에 apiKey, projectId, appId가 필요합니다.");
   }
@@ -470,7 +480,7 @@ async function startCloudSync({ uploadCurrentIfEmpty = false } = {}) {
     return;
   }
 
-  if (!syncSettings.syncId.trim() || !syncSettings.firebaseConfigText.trim()) {
+  if (!syncSettings.syncId.trim() || (!getBundledFirebaseConfig() && !syncSettings.firebaseConfigText.trim())) {
     setSyncStatus("동기화 ID와 Firebase 설정을 입력해 주세요.", "error");
     return;
   }
