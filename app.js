@@ -32,8 +32,16 @@ const shareDialogTitle = document.querySelector("#shareDialogTitle");
 const sharePasswordInput = document.querySelector("#sharePasswordInput");
 const shareLinkField = document.querySelector("#shareLinkField");
 const shareLinkInput = document.querySelector("#shareLinkInput");
+const copyShareLinkButton = document.querySelector("#copyShareLinkButton");
 const confirmShareButton = document.querySelector("#confirmShareButton");
 const cancelShareButton = document.querySelector("#cancelShareButton");
+const deleteDialog = document.querySelector("#deleteDialog");
+const deleteDialogMessage = document.querySelector("#deleteDialogMessage");
+const sharedDeleteOptions = document.querySelector("#sharedDeleteOptions");
+const deleteForMeButton = document.querySelector("#deleteForMeButton");
+const deleteForEveryoneButton = document.querySelector("#deleteForEveryoneButton");
+const cancelDeleteButton = document.querySelector("#cancelDeleteButton");
+const confirmPersonalDeleteButton = document.querySelector("#confirmPersonalDeleteButton");
 
 const ctx = wheelCanvas.getContext("2d");
 let personalState = loadPersonalState();
@@ -428,6 +436,7 @@ async function loadFirebaseApi() {
     doc: firestoreModule.doc,
     getDoc: firestoreModule.getDoc,
     setDoc: firestoreModule.setDoc,
+    deleteDoc: firestoreModule.deleteDoc,
     onSnapshot: firestoreModule.onSnapshot,
   };
   return firebaseApi;
@@ -735,6 +744,66 @@ function rememberSharedWorkspace(id, name) {
   renderSharedProjects();
 }
 
+function leaveSharedWorkspace() {
+  if (activeWorkspace.type !== "shared") {
+    return;
+  }
+  const leavingId = activeWorkspace.id;
+  sharedIndex = sharedIndex.filter((entry) => entry.id !== leavingId);
+  saveSharedIndex();
+  stopCloudSync();
+  activeWorkspace = { type: "personal" };
+  state = personalState;
+  activeProjectId = personalState.activeProjectId || personalState.projects[0].id;
+  activeRouletteId = getActiveProject().activeRouletteId;
+  setSyncStatus("공유 룰렛을 내 목록에서 삭제했습니다.", "ok");
+  subscribeToActiveWorkspace();
+  render();
+}
+
+async function deleteSharedWorkspaceForEveryone() {
+  if (activeWorkspace.type !== "shared") {
+    return;
+  }
+  const deletingId = activeWorkspace.id;
+
+  try {
+    const docRef = activeDocRef || await getDocRefForWorkspace(activeWorkspace);
+    if (docRef && firebaseApi) {
+      await firebaseApi.deleteDoc(docRef);
+    }
+    sharedIndex = sharedIndex.filter((entry) => entry.id !== deletingId);
+    saveSharedIndex();
+    stopCloudSync();
+    activeWorkspace = { type: "personal" };
+    state = personalState;
+    activeProjectId = personalState.activeProjectId || personalState.projects[0].id;
+    activeRouletteId = getActiveProject().activeRouletteId;
+    setSyncStatus("공유 룰렛을 모두에게서 삭제했습니다.", "ok");
+    subscribeToActiveWorkspace();
+    render();
+  } catch {
+    setSyncStatus("공유 룰렛 삭제에 실패했습니다. Firestore 권한을 확인해 주세요.", "error");
+  }
+}
+
+function openDeleteDialog() {
+  if (activeWorkspace.type === "shared") {
+    deleteDialogMessage.textContent = "공유 룰렛 삭제 방식을 선택하세요. 모두에게서 삭제하면 공유 링크를 가진 사람도 더 이상 접근할 수 없습니다.";
+    sharedDeleteOptions.hidden = false;
+    confirmPersonalDeleteButton.hidden = true;
+  } else {
+    deleteDialogMessage.textContent = "내 프로젝트를 삭제할까요? 삭제하면 이 계정의 룰렛 목록에서 제거됩니다.";
+    sharedDeleteOptions.hidden = true;
+    confirmPersonalDeleteButton.hidden = false;
+  }
+  deleteDialog.showModal();
+}
+
+function confirmDanger(message) {
+  return window.confirm(message);
+}
+
 async function openSharedWorkspace(id) {
   activeWorkspace = { type: "shared", id };
   const fallback = createProject("공유 룰렛");
@@ -761,6 +830,34 @@ signInButton.addEventListener("click", signIn);
 signOutButton.addEventListener("click", signOutUser);
 shareProjectButton.addEventListener("click", openCreateShareDialog);
 cancelShareButton.addEventListener("click", () => shareDialog.close());
+deleteProjectButton.addEventListener("click", openDeleteDialog);
+cancelDeleteButton.addEventListener("click", () => deleteDialog.close());
+deleteForMeButton.addEventListener("click", () => {
+  if (confirmDanger("이 공유 룰렛을 내 목록에서만 삭제할까요? 다른 사람에게는 그대로 남습니다.")) {
+    deleteDialog.close();
+    leaveSharedWorkspace();
+  }
+});
+deleteForEveryoneButton.addEventListener("click", () => {
+  if (confirmDanger("정말 모두에게서 삭제할까요? 공유 링크를 가진 사람도 더 이상 접근할 수 없습니다.")) {
+    deleteDialog.close();
+    deleteSharedWorkspaceForEveryone();
+  }
+});
+confirmPersonalDeleteButton.addEventListener("click", () => {
+  if (confirmDanger("정말 이 프로젝트를 삭제할까요?")) {
+    deleteDialog.close();
+    deletePersonalProject();
+  }
+});
+copyShareLinkButton.addEventListener("click", async () => {
+  if (!shareLinkInput.value) {
+    return;
+  }
+  await navigator.clipboard?.writeText(shareLinkInput.value).catch(() => {});
+  shareLinkInput.select();
+  setSyncStatus("공유 링크를 복사했습니다.", "ok");
+});
 
 projectNameInput.addEventListener("input", () => {
   getActiveProject().name = projectNameInput.value.trimStart() || "이름 없는 프로젝트";
@@ -800,9 +897,8 @@ deleteRouletteButton.addEventListener("click", () => {
   render();
 });
 
-deleteProjectButton.addEventListener("click", () => {
+function deletePersonalProject() {
   if (activeWorkspace.type === "shared") {
-    setSyncStatus("공유 룰렛 자체 삭제는 아직 지원하지 않습니다.", "error");
     return;
   }
   if (personalState.projects.length <= 1) {
@@ -815,7 +911,7 @@ deleteProjectButton.addEventListener("click", () => {
   activeRouletteId = getActiveProject().activeRouletteId;
   saveState();
   render();
-});
+}
 
 exportButton.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });

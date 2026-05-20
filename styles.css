@@ -19,6 +19,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -30,7 +34,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -119,6 +124,55 @@ button {
   gap: 8px;
 }
 
+.account-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.account-card strong {
+  color: #ffffff;
+  overflow-wrap: anywhere;
+}
+
+.account-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ghost-dark-button {
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.account-status {
+  margin: 0;
+  color: #b9c5d8;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.account-status[data-mode="ok"] {
+  color: #86efac;
+}
+
+.account-status[data-mode="working"] {
+  color: #93c5fd;
+}
+
+.account-status[data-mode="error"] {
+  color: #fda4af;
+}
+
 .project-button {
   width: 100%;
   border: 1px solid transparent;
@@ -133,6 +187,22 @@ button {
 .project-button.active {
   background: #ffffff;
   color: #111827;
+}
+
+.project-button.shared {
+  color: #d9f8f6;
+}
+
+.shared-title {
+  margin-top: 6px;
+}
+
+.shared-empty {
+  margin: 0;
+  padding: 4px 2px;
+  color: #96a3b8;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .workspace {
@@ -303,6 +373,7 @@ button:disabled {
 }
 
 .sync-grid input,
+.sync-grid select,
 .sync-grid textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -320,6 +391,7 @@ button:disabled {
 }
 
 .sync-grid input:focus,
+.sync-grid select:focus,
 .sync-grid textarea:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(45, 108, 223, 0.12);
@@ -511,6 +583,80 @@ canvas {
   padding: 22px;
   color: var(--muted);
   text-align: center;
+}
+
+.share-dialog {
+  width: min(460px, calc(100vw - 28px));
+  border: 0;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: var(--shadow);
+}
+
+.share-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.dialog-card {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  background: #ffffff;
+}
+
+.dialog-card h2 {
+  margin: 0;
+}
+
+.dialog-copy {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.dialog-card label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dialog-card input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--ink);
+  outline: none;
+}
+
+.dialog-card input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(45, 108, 223, 0.12);
+}
+
+.copy-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.copy-row .ghost-button {
+  min-height: 42px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.delete-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 @media (max-width: 980px) {

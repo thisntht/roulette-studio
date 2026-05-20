@@ -114,13 +114,34 @@
         </label>
         <label id="shareLinkField" hidden>
           <span>공유 링크</span>
-          <input id="shareLinkInput" type="text" readonly />
+          <div class="copy-row">
+            <input id="shareLinkInput" type="text" readonly />
+            <button class="ghost-button" id="copyShareLinkButton" type="button">복사</button>
+          </div>
         </label>
         <div class="dialog-actions">
           <button class="ghost-button" id="cancelShareButton" type="button">닫기</button>
           <button class="primary-button" id="confirmShareButton" type="submit">공유 만들기</button>
         </div>
       </form>
+    </dialog>
+
+    <dialog class="share-dialog" id="deleteDialog">
+      <div class="dialog-card">
+        <div>
+          <p class="eyebrow">Delete</p>
+          <h2>프로젝트 삭제</h2>
+        </div>
+        <p class="dialog-copy" id="deleteDialogMessage">삭제 방식을 선택하세요.</p>
+        <div class="delete-options" id="sharedDeleteOptions">
+          <button class="ghost-button" id="deleteForMeButton" type="button">나에게서만 삭제</button>
+          <button class="danger-button" id="deleteForEveryoneButton" type="button">모두에게서 삭제</button>
+        </div>
+        <div class="dialog-actions">
+          <button class="ghost-button" id="cancelDeleteButton" type="button">취소</button>
+          <button class="danger-button" id="confirmPersonalDeleteButton" type="button">삭제</button>
+        </div>
+      </div>
     </dialog>
 
     <script src="firebase-config.js"></script>
