@@ -194,7 +194,7 @@ function render() {
   accountMenuButton.textContent = currentUser?.email?.slice(0, 1).toUpperCase() || "?";
   accountSummaryText.textContent = currentUser?.email || "로그인 필요";
   signOutButton.disabled = !currentUser;
-  shareProjectButton.disabled = !currentUser;
+  shareProjectButton.disabled = false;
   renderProjects();
   renderSharedProjects();
   renderTabs(project);
@@ -211,7 +211,10 @@ function renderProjects() {
     button.type = "button";
     button.className = `project-button${activeWorkspace.type === "personal" && project.id === activeProjectId ? " active" : ""}`;
     button.textContent = project.name;
-    button.addEventListener("click", () => setActiveProject(project.id));
+    button.addEventListener("click", () => {
+      setActiveProject(project.id);
+      setMobileSidebarOpen(false);
+    });
     projectList.append(button);
   });
 }
@@ -231,7 +234,10 @@ function renderSharedProjects() {
     button.type = "button";
     button.className = `project-button shared${activeWorkspace.type === "shared" && activeWorkspace.id === shared.id ? " active" : ""}`;
     button.textContent = shared.name || "공유 룰렛";
-    button.addEventListener("click", () => openSharedWorkspace(shared.id));
+    button.addEventListener("click", () => {
+      openSharedWorkspace(shared.id);
+      setMobileSidebarOpen(false);
+    });
     sharedProjectList.append(button);
   });
 }
