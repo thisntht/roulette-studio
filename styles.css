@@ -248,6 +248,7 @@ button {
 }
 
 .ghost-button,
+.subtle-button,
 .primary-button,
 .danger-button,
 .import-label {
@@ -264,6 +265,16 @@ button {
 
 .ghost-button,
 .import-label {
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.subtle-button {
+  background: transparent;
+  color: var(--muted);
+}
+
+.subtle-button:hover {
   background: #ffffff;
   color: var(--ink);
 }
