@@ -54,7 +54,22 @@
             <input class="project-name-input" id="projectNameInput" aria-label="프로젝트 이름" />
           </div>
           <div class="topbar-actions">
-            <button class="tool-button" id="shareProjectButton" type="button" title="룰렛 공유" aria-label="룰렛 공유">↗</button>
+            <button class="tool-button" id="shareProjectButton" type="button" title="룰렛 공유" aria-label="룰렛 공유">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+                <path d="M12 15V3" />
+                <path d="m7 8 5-5 5 5" />
+              </svg>
+            </button>
+            <button class="tool-button danger-tool" id="deleteProjectButton" type="button" title="프로젝트 삭제" aria-label="프로젝트 삭제">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 6h18" />
+                <path d="M8 6V4h8v2" />
+                <path d="M6 6l1 14h10l1-14" />
+                <path d="M10 11v5" />
+                <path d="M14 11v5" />
+              </svg>
+            </button>
             <div class="more-menu">
               <button class="more-button" id="moreActionsButton" type="button" aria-label="추가 작업" aria-expanded="false">⋯</button>
               <div class="more-menu-panel" id="moreActionsPanel" hidden>
@@ -63,7 +78,6 @@
                 <input id="importInput" type="file" accept="application/json" hidden />
               </div>
             </div>
-            <button class="tool-button danger-tool" id="deleteProjectButton" type="button" title="프로젝트 삭제" aria-label="프로젝트 삭제">×</button>
           </div>
         </header>
 

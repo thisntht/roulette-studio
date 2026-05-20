@@ -1,18 +1,18 @@
 :root {
   color-scheme: light;
-  --bg: #f5f7fb;
+  --bg: #f7f7f5;
   --panel: #ffffff;
-  --ink: #172033;
-  --muted: #6d778b;
-  --line: #dce2ee;
-  --blue: #5b8def;
-  --blue-dark: #3f70cc;
-  --teal: #55beb8;
-  --rose: #e46c8a;
-  --amber: #f5b84b;
-  --green: #70c58b;
-  --violet: #927be8;
-  --shadow: 0 14px 34px rgba(29, 42, 68, 0.09);
+  --ink: #20201f;
+  --muted: #72706b;
+  --line: #dedbd4;
+  --blue: #4f7ed8;
+  --blue-dark: #315da8;
+  --teal: #5eb7aa;
+  --rose: #d8697c;
+  --amber: #e7ad48;
+  --green: #72b883;
+  --violet: #8c79d8;
+  --shadow: 0 12px 28px rgba(30, 28, 24, 0.08);
 }
 
 * {
@@ -50,8 +50,9 @@ button {
 }
 
 .sidebar {
-  background: #eef5fb;
+  background: #fbfaf8;
   color: var(--ink);
+  border-right: 1px solid #d8d4cb;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -70,8 +71,9 @@ button {
   display: grid;
   place-items: center;
   border-radius: 8px;
-  background: linear-gradient(135deg, #78d6d0, #73a6f4);
+  background: #f1f0ed;
   color: #ffffff;
+  color: var(--ink);
   font-weight: 800;
 }
 
@@ -90,7 +92,7 @@ button {
 }
 
 .sidebar .eyebrow {
-  color: #708199;
+  color: #7b7973;
 }
 
 .section-title,
@@ -112,7 +114,7 @@ button {
 .icon-button {
   width: 34px;
   height: 34px;
-  border: 1px solid #cbd8e8;
+  border: 1px solid #d8d4cb;
   border-radius: 8px;
   background: #ffffff;
   color: var(--ink);
@@ -210,8 +212,8 @@ button {
 }
 
 .project-button.active {
-  background: #ffffff;
-  color: #111827;
+  background: #ededeb;
+  color: var(--ink);
 }
 
 .project-button.shared {
@@ -281,8 +283,17 @@ button {
   border-radius: 8px;
   background: #ffffff;
   color: var(--ink);
-  font-size: 18px;
   font-weight: 900;
+}
+
+.tool-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .tool-button:hover {
