@@ -2,7 +2,7 @@ const STORAGE_KEY = "roulette-studio-personal-v2";
 const LEGACY_STORAGE_KEY = "roulette-studio-projects-v1";
 const SHARED_INDEX_KEY = "roulette-studio-shared-index-v1";
 const PENDING_SHARE_KEY = "roulette-studio-pending-share-v1";
-const palette = ["#62b6ff", "#ffcf4d", "#ff7a8a", "#55d6a7", "#b77dff", "#ff9f43", "#4dd6e8", "#9be15d"];
+const palette = ["#f7b6bd", "#ffd9b8", "#fff0a8", "#cfe8c9", "#c9e4f2", "#d8cdf0", "#f5c9dc", "#ead8b8"];
 
 const projectList = document.querySelector("#projectList");
 const sharedProjectList = document.querySelector("#sharedProjectList");
@@ -32,6 +32,7 @@ const appShell = document.querySelector(".app-shell");
 const sidebarResizer = document.querySelector("#sidebarResizer");
 const mobileMenuButton = document.querySelector("#mobileSidebarToggle") || document.querySelector("#mobileMenuButton");
 const mobileSidebarBackdrop = document.querySelector("#sidebarBackdrop") || document.querySelector("#mobileSidebarBackdrop");
+const sidebarCloseButton = document.querySelector("#sidebarCloseButton");
 const syncStatus = document.querySelector("#syncStatus");
 const signInButton = document.querySelector("#signInButton");
 const signOutButton = document.querySelector("#signOutButton");
@@ -1065,6 +1066,10 @@ if (mobileSidebarBackdrop) {
   mobileSidebarBackdrop.addEventListener("click", () => {
     setMobileSidebarOpen(false);
   });
+}
+
+if (sidebarCloseButton) {
+  sidebarCloseButton.addEventListener("click", () => setMobileSidebarOpen(false));
 }
 
 sidebarResizer.addEventListener("pointerdown", (event) => {
