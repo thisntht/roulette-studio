@@ -390,7 +390,7 @@ function spinRoulette() {
   const winnerIndex = Math.floor(Math.random() * items.length);
   const sliceDegrees = 360 / items.length;
   const winnerCenter = winnerIndex * sliceDegrees + sliceDegrees / 2;
-  const pointerDegrees = 270;
+  const pointerDegrees = 0;
   const extraTurns = 5 + Math.floor(Math.random() * 3);
   const targetRotation = extraTurns * 360 + pointerDegrees - winnerCenter;
 
@@ -407,9 +407,17 @@ function spinRoulette() {
       wheelCanvas.style.transition = "";
     });
     currentRotation = normalizedRotation;
-    resultBox.textContent = `결과: ${items[winnerIndex]}`;
+    resultBox.textContent = `결과: ${getPointedItem(items, normalizedRotation)}`;
     render();
   }, 4400);
+}
+
+function getPointedItem(items, rotationDegrees) {
+  const sliceDegrees = 360 / items.length;
+  const pointerDegrees = 0;
+  const wheelAngleAtPointer = ((pointerDegrees - rotationDegrees) % 360 + 360) % 360;
+  const index = Math.floor(wheelAngleAtPointer / sliceDegrees) % items.length;
+  return items[index];
 }
 
 function setSyncStatus(message, mode = "idle") {
