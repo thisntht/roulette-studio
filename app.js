@@ -895,8 +895,6 @@ async function openCreateShareDialog() {
     }
     showShareInfo(existingShareId);
     shareDialog.showModal();
-    shareLinkInput.focus();
-    shareLinkInput.select();
     if (isShortShareId(existingShareId)) {
       setSyncStatus(originalShareId === existingShareId ? "공유 정보를 불러왔습니다." : "공유 링크를 새로 만들었습니다.", "ok");
     }

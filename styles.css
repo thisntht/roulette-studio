@@ -942,8 +942,8 @@ canvas {
 
 .copy-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 86px;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
   align-items: stretch;
 }
 
@@ -953,8 +953,7 @@ canvas {
 
 .copy-row .ghost-button {
   min-height: 42px;
-  min-width: 86px;
-  padding-inline: 14px;
+  min-width: 58px;
   cursor: pointer;
   touch-action: manipulation;
   position: relative;
