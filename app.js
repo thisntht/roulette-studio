@@ -2,6 +2,7 @@ const STORAGE_KEY = "roulette-studio-personal-v2";
 const LEGACY_STORAGE_KEY = "roulette-studio-projects-v1";
 const SHARED_INDEX_KEY = "roulette-studio-shared-index-v1";
 const PENDING_SHARE_KEY = "roulette-studio-pending-share-v1";
+const SHARE_ID_LENGTH = 6;
 const palette = ["#ff8fa3", "#ffbf69", "#ffe066", "#8ce99a", "#74c0fc", "#b197fc", "#66d9e8", "#ffa8d3"];
 
 const projectList = document.querySelector("#projectList");
@@ -729,8 +730,12 @@ async function hashPassword(password) {
 
 function createShareId() {
   const alphabet = "abcdefghijkmnpqrstuvwxyz23456789";
-  const values = crypto.getRandomValues(new Uint8Array(8));
+  const values = crypto.getRandomValues(new Uint8Array(SHARE_ID_LENGTH));
   return Array.from(values, (value) => alphabet[value % alphabet.length]).join("");
+}
+
+function isShortShareId(shareId) {
+  return typeof shareId === "string" && shareId.length <= SHARE_ID_LENGTH;
 }
 
 function buildShareUrl(shareId) {
@@ -756,18 +761,71 @@ function showShareInfo(shareId) {
   shareIdField.hidden = false;
 }
 
-function openCreateShareDialog() {
+async function migrateShareIdIfNeeded(shareId) {
+  if (!shareId || isShortShareId(shareId)) {
+    return shareId;
+  }
+
+  const { api, app } = await setupFirebase();
+  const db = api.getFirestore(app);
+  const oldDocRef = api.doc(db, "sharedWorkspaces", shareId);
+  const oldSnapshot = await api.getDoc(oldDocRef);
+  if (!oldSnapshot.exists()) {
+    return shareId;
+  }
+
+  const payload = oldSnapshot.data();
+  let newShareId = createShareId();
+  let newDocRef = api.doc(db, "sharedWorkspaces", newShareId);
+  let newSnapshot = await api.getDoc(newDocRef);
+  while (newSnapshot.exists()) {
+    newShareId = createShareId();
+    newDocRef = api.doc(db, "sharedWorkspaces", newShareId);
+    newSnapshot = await api.getDoc(newDocRef);
+  }
+
+  await api.setDoc(newDocRef, {
+    ...payload,
+    updatedAt: Date.now(),
+  });
+
+  if (activeWorkspace.type === "personal") {
+    const project = getActiveProject();
+    project.sharedWorkspaceId = newShareId;
+    saveState();
+  } else if (activeWorkspace.type === "shared" && activeWorkspace.id === shareId) {
+    stopCloudSync();
+    activeWorkspace = { type: "shared", id: newShareId };
+    activeDocRef = newDocRef;
+    await subscribeToActiveWorkspace();
+  }
+
+  sharedIndex = sharedIndex.filter((entry) => entry.id !== shareId);
+  rememberSharedWorkspace(newShareId, payload.name || getActiveProject().name || "공유 룰렛");
+  return newShareId;
+}
+
+async function openCreateShareDialog() {
   if (!currentUser) {
     setSyncStatus("공유하려면 먼저 로그인해 주세요.", "error");
     return;
   }
-  const existingShareId = activeWorkspace.type === "shared" ? activeWorkspace.id : getActiveProject().sharedWorkspaceId;
+  let existingShareId = activeWorkspace.type === "shared" ? activeWorkspace.id : getActiveProject().sharedWorkspaceId;
   if (existingShareId) {
     shareDialogMode = "info";
+    setSyncStatus("공유 정보를 불러오는 중...", "working");
+    try {
+      existingShareId = await migrateShareIdIfNeeded(existingShareId);
+    } catch {
+      setSyncStatus("공유 ID를 짧게 바꾸지 못했습니다. 기존 공유 정보를 표시합니다.", "error");
+    }
     showShareInfo(existingShareId);
     shareDialog.showModal();
     shareLinkInput.focus();
     shareLinkInput.select();
+    if (isShortShareId(existingShareId)) {
+      setSyncStatus("공유 정보를 불러왔습니다.", "ok");
+    }
     return;
   }
 
