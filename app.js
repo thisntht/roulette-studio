@@ -316,8 +316,11 @@ function renderItems(roulette) {
     input.setAttribute("aria-label", `${index + 1}번 항목`);
     input.addEventListener("input", () => {
       roulette.items[index] = input.value.trimStart();
-      saveState();
+      saveState({ skipCloud: true });
       drawWheel(roulette.items, currentRotation);
+    });
+    input.addEventListener("blur", () => {
+      saveState();
     });
 
     const remove = document.createElement("button");
@@ -1149,9 +1152,18 @@ projectNameInput.addEventListener("blur", () => {
 });
 
 rouletteTitleInput.addEventListener("input", () => {
-  getActiveRoulette().title = rouletteTitleInput.value.trimStart() || "이름 없는 룰렛";
-  saveState();
+  getActiveRoulette().title = rouletteTitleInput.value.trimStart();
+  saveState({ skipCloud: true });
   renderTabs(getActiveProject());
+});
+
+rouletteTitleInput.addEventListener("blur", () => {
+  const roulette = getActiveRoulette();
+  if (!roulette.title.trim()) {
+    roulette.title = "이름 없는 룰렛";
+    render();
+  }
+  saveState();
 });
 
 addItemForm.addEventListener("submit", (event) => {
