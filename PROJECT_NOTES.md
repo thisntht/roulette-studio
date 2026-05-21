@@ -1,8 +1,8 @@
 # Roulette Studio Notes
 
 ## Links
-- Repository: https://github.com/roulette-studio-app/roulette-studio
-- App: https://roulette-studio-app.github.io/roulette-studio/
+- Repository: https://github.com/thisntht/roulette-studio
+- App: https://thisntht.github.io/roulette-studio/
 - Firebase project: roulette-studio-app
 
 ## Stack
