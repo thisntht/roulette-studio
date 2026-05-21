@@ -47,9 +47,6 @@ const sharePasswordField = sharePasswordInput.closest("label");
 const shareLinkField = document.querySelector("#shareLinkField");
 const shareLinkInput = document.querySelector("#shareLinkInput");
 const copyShareLinkButton = document.querySelector("#copyShareLinkButton");
-const shareIdField = document.querySelector("#shareIdField");
-const shareIdInput = document.querySelector("#shareIdInput");
-const copyShareIdButton = document.querySelector("#copyShareIdButton");
 const confirmShareButton = document.querySelector("#confirmShareButton");
 const cancelShareButton = document.querySelector("#cancelShareButton");
 const deleteDialog = document.querySelector("#deleteDialog");
@@ -747,10 +744,6 @@ function buildShareUrl(shareId) {
   return url.toString();
 }
 
-function buildShareMessage(shareId) {
-  return `공유 ID: ${shareId}\n공유 링크: ${buildShareUrl(shareId)}`;
-}
-
 function showShareInfo(shareId) {
   pendingShareId = shareId;
   shareDialogTitle.textContent = "공유 정보";
@@ -759,9 +752,7 @@ function showShareInfo(shareId) {
   sharePasswordInput.required = false;
   sharePasswordInput.value = "";
   shareLinkInput.value = buildShareUrl(shareId);
-  shareIdInput.value = shareId;
   shareLinkField.hidden = false;
-  shareIdField.hidden = false;
 }
 
 async function migrateShareIdIfNeeded(shareId) {
@@ -774,7 +765,7 @@ async function migrateShareIdIfNeeded(shareId) {
   const oldDocRef = api.doc(db, "sharedWorkspaces", shareId);
   const oldSnapshot = await api.getDoc(oldDocRef);
   if (!oldSnapshot.exists()) {
-    throw new Error("기존 공유 정보를 찾을 수 없어 공유 ID를 교체하지 못했습니다.");
+    throw new Error("기존 공유 정보를 찾을 수 없어 공유 링크를 다시 만들지 못했습니다.");
   }
 
   const payload = oldSnapshot.data();
@@ -836,7 +827,7 @@ async function openCreateShareDialog() {
     try {
       existingShareId = await migrateShareIdIfNeeded(existingShareId);
     } catch (error) {
-      const message = error.message || "공유 ID를 짧게 바꾸지 못했습니다.";
+      const message = error.message || "공유 링크를 다시 만들지 못했습니다.";
       setSyncStatus(message, "error");
       window.alert(`${message}\n\n로그인 상태와 Firestore 권한을 확인한 뒤 다시 눌러주세요.`);
       return;
@@ -846,7 +837,7 @@ async function openCreateShareDialog() {
     shareLinkInput.focus();
     shareLinkInput.select();
     if (isShortShareId(existingShareId)) {
-      setSyncStatus(originalShareId === existingShareId ? "공유 정보를 불러왔습니다." : "공유 ID를 6자리로 교체했습니다.", "ok");
+      setSyncStatus(originalShareId === existingShareId ? "공유 정보를 불러왔습니다." : "공유 링크를 새로 만들었습니다.", "ok");
     }
     return;
   }
@@ -860,9 +851,7 @@ async function openCreateShareDialog() {
   sharePasswordInput.required = true;
   sharePasswordInput.value = "";
   shareLinkInput.value = "";
-  shareIdInput.value = "";
   shareLinkField.hidden = true;
-  shareIdField.hidden = true;
   shareDialog.showModal();
   sharePasswordInput.focus();
 }
@@ -874,7 +863,7 @@ function openJoinShareDialog(shareId = "") {
     return;
   }
   shareDialogMode = "join";
-  pendingShareId = shareId || prompt("공유 링크나 공유 ID를 입력하세요.") || "";
+  pendingShareId = shareId || prompt("공유 링크를 붙여넣어 주세요.") || "";
   pendingShareId = extractShareId(pendingShareId);
   if (!pendingShareId) {
     return;
@@ -886,9 +875,7 @@ function openJoinShareDialog(shareId = "") {
   sharePasswordInput.required = true;
   sharePasswordInput.value = "";
   shareLinkInput.value = "";
-  shareIdInput.value = "";
   shareLinkField.hidden = true;
-  shareIdField.hidden = true;
   shareDialog.showModal();
   sharePasswordInput.focus();
 }
@@ -898,11 +885,6 @@ function extractShareId(value) {
   const shareParam = text.match(/[?&]share=([^&\s]+)/);
   if (shareParam?.[1]) {
     return decodeURIComponent(shareParam[1]);
-  }
-
-  const labelledId = text.match(/공유\s*ID\s*:\s*([a-z0-9-]+)/i);
-  if (labelledId?.[1]) {
-    return labelledId[1].trim();
   }
 
   try {
@@ -940,9 +922,7 @@ async function createSharedWorkspace(password) {
   }
   rememberSharedWorkspace(shareId, project.name);
   shareLinkInput.value = buildShareUrl(shareId);
-  shareIdInput.value = shareId;
   shareLinkField.hidden = false;
-  shareIdField.hidden = false;
   await navigator.clipboard?.writeText(shareLinkInput.value).catch(() => {});
   setSyncStatus("공유 링크를 만들었습니다. 링크가 복사되었습니다.", "ok");
 }
@@ -953,7 +933,7 @@ async function joinSharedWorkspace(shareId, password) {
   const docRef = api.doc(db, "sharedWorkspaces", shareId);
   const snapshot = await api.getDoc(docRef);
   if (!snapshot.exists()) {
-    throw new Error("공유 룰렛을 찾을 수 없습니다. 공유 ID나 링크를 다시 확인해 주세요.");
+    throw new Error("공유 룰렛을 찾을 수 없습니다. 공유 링크를 다시 확인해 주세요.");
   }
   const payload = snapshot.data();
   if (payload.passwordHash !== await hashPassword(password)) {
@@ -1123,15 +1103,6 @@ copyShareLinkButton.addEventListener("click", async () => {
   await navigator.clipboard?.writeText(shareLinkInput.value).catch(() => {});
   shareLinkInput.select();
   setSyncStatus("공유 링크를 복사했습니다.", "ok");
-});
-
-copyShareIdButton.addEventListener("click", async () => {
-  if (!shareIdInput.value) {
-    return;
-  }
-  await navigator.clipboard?.writeText(buildShareMessage(shareIdInput.value)).catch(() => {});
-  shareIdInput.select();
-  setSyncStatus("공유 ID와 링크를 복사했습니다.", "ok");
 });
 
 projectNameInput.addEventListener("input", () => {
