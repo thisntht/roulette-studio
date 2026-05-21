@@ -771,7 +771,7 @@ async function migrateShareIdIfNeeded(shareId) {
   const oldDocRef = api.doc(db, "sharedWorkspaces", shareId);
   const oldSnapshot = await api.getDoc(oldDocRef);
   if (!oldSnapshot.exists()) {
-    return shareId;
+    throw new Error("기존 공유 정보를 찾을 수 없어 공유 ID를 교체하지 못했습니다.");
   }
 
   const payload = oldSnapshot.data();
@@ -806,6 +806,8 @@ async function migrateShareIdIfNeeded(shareId) {
     const project = getActiveProject();
     project.sharedWorkspaceId = newShareId;
     saveState();
+    activeDocRef = activeDocRef || await getDocRefForWorkspace(activeWorkspace);
+    await uploadCloudState();
   } else if (activeWorkspace.type === "shared" && activeWorkspace.id === shareId) {
     stopCloudSync();
     activeWorkspace = { type: "shared", id: newShareId };
@@ -826,6 +828,7 @@ async function openCreateShareDialog() {
   let existingShareId = activeWorkspace.type === "shared" ? activeWorkspace.id : getActiveProject().sharedWorkspaceId;
   if (existingShareId) {
     shareDialogMode = "info";
+    const originalShareId = existingShareId;
     setSyncStatus("공유 정보를 불러오는 중...", "working");
     try {
       existingShareId = await migrateShareIdIfNeeded(existingShareId);
@@ -833,13 +836,14 @@ async function openCreateShareDialog() {
       const message = error.message || "공유 ID를 짧게 바꾸지 못했습니다.";
       setSyncStatus(message, "error");
       window.alert(`${message}\n\n로그인 상태와 Firestore 권한을 확인한 뒤 다시 눌러주세요.`);
+      return;
     }
     showShareInfo(existingShareId);
     shareDialog.showModal();
     shareLinkInput.focus();
     shareLinkInput.select();
     if (isShortShareId(existingShareId)) {
-      setSyncStatus("공유 정보를 불러왔습니다.", "ok");
+      setSyncStatus(originalShareId === existingShareId ? "공유 정보를 불러왔습니다." : "공유 ID를 6자리로 교체했습니다.", "ok");
     }
     return;
   }
