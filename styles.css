@@ -744,6 +744,15 @@ button:disabled {
   gap: 16px;
 }
 
+.wheel-header > div {
+  min-width: 0;
+}
+
+.reset-roulette-button svg {
+  width: 18px;
+  height: 18px;
+}
+
 .wheel-stage {
   width: min(100%, 560px);
   aspect-ratio: 1;
@@ -1157,10 +1166,14 @@ canvas {
     display: none;
   }
 
-  .wheel-header,
   .panel-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .wheel-header {
+    align-items: center;
+    flex-direction: row;
   }
 
   .tool-button,

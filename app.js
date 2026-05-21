@@ -13,6 +13,7 @@ const projectNameInput = document.querySelector("#projectNameInput");
 const workspaceTypeLabel = document.querySelector("#workspaceTypeLabel");
 const rouletteTabs = document.querySelector("#rouletteTabs");
 const rouletteTitleInput = document.querySelector("#rouletteTitleInput");
+const resetRouletteButton = document.querySelector("#resetRouletteButton");
 const spinButton = document.querySelector("#spinButton");
 const wheelCanvas = document.querySelector("#wheelCanvas");
 const resultBox = document.querySelector("#resultBox");
@@ -476,6 +477,25 @@ function spinRoulette() {
     resultBox.textContent = `결과: ${result}`;
     spinButton.disabled = activeRoulette.items.length < 2;
   }, 4400);
+}
+
+function resetActiveRoulette() {
+  if (isSpinning) {
+    return;
+  }
+
+  const roulette = getActiveRoulette();
+  roulette.rotation = 0;
+  roulette.lastResult = "";
+  currentRotation = 0;
+  wheelCanvas.style.transition = "none";
+  wheelCanvas.style.transform = "rotate(0deg)";
+  drawWheel(roulette.items, currentRotation);
+  requestAnimationFrame(() => {
+    wheelCanvas.style.transition = "";
+  });
+  saveState();
+  resultBox.textContent = "항목을 넣고 룰렛을 돌려보세요.";
 }
 
 function getPointedItem(items, rotationDegrees) {
@@ -1066,6 +1086,7 @@ addProjectButton.addEventListener("click", (event) => {
 });
 joinSharedButton.addEventListener("click", () => openJoinShareDialog());
 spinButton.addEventListener("click", spinRoulette);
+resetRouletteButton.addEventListener("click", resetActiveRoulette);
 signInButton.addEventListener("click", signIn);
 signOutButton.addEventListener("click", signOutUser);
 shareProjectButton.addEventListener("click", openCreateShareDialog);
