@@ -1210,6 +1210,11 @@ canvas {
     gap: 8px;
   }
 
+  .add-item-form input,
+  .item-input {
+    font-size: 16px;
+  }
+
   .tab-button {
     min-height: 30px;
     padding: 5px 10px;
